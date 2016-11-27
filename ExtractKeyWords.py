@@ -1,6 +1,7 @@
 import operator
 import string
 import os
+import numpy
 
 
 stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
