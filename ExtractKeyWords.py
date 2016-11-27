@@ -1,7 +1,6 @@
 import operator
 import string
 import os
-import numpy
 
 
 stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
@@ -64,6 +63,7 @@ def extractTopWords(dict):
         top.append(dictSorted[i][0])
     return top
 
+
 def extractTopWordsWithNumber(dict, number):
     dictSorted = sorted(dict.items(), key = operator.itemgetter(1), reverse = True)
     top = []
@@ -71,10 +71,30 @@ def extractTopWordsWithNumber(dict, number):
         top.append(dictSorted[i][0])
     return top
 
-dict = calculateTotalDict("../dataset/processed/enron1/enron1/spam/")
-print dict
-result = extractTopWords(dict)
+
+def combineTopWordVector(topDict1, topDict2):
+    for element in topDict2:
+        if element not in topDict1:
+            topDict1.append(element)
+    return topDict1
+
+
+def resultVector(ffp1,ffp2):
+    dict1 = calculateTotalDict(ffp1)
+    topDict1 = extractTopWords(dict1)
+    print topDict1
+    dict2 = calculateTotalDict(ffp2)
+    topDict2 = extractTopWords(dict2)
+    result = combineTopWordVector(topDict1, topDict2)
+    return result
+
+ffp1 = "../dataset/processed/enron1/enron1/spam/"
+ffp2 = "../dataset/processed/enron1/enron1/ham/"
+result = resultVector(ffp1,ffp2)
 print result
+
+# result = extractTopWords(dict)
+# print result
 # path1 = "../dataset/processed/enron1/enron1/spam/0008.2003-12-18.GP.spam.txt"
 # path2 = "../dataset/processed/enron1/enron1/spam/0017.2003-12-18.GP.spam.txt"
 # d1 = DicCreator(path1)
