@@ -56,19 +56,24 @@ def calculateTotalDict(folderpath):
     return wholeDict
 
 
-def extractTopWords(dict, number):
+def extractTopWords(dict):
     dictSorted = sorted(dict.items(), key = operator.itemgetter(1), reverse = True)
     top = []
-    for i in range(0,number):
+    for i in range(len(dict)):
         top.append(dictSorted[i][0])
     return top
 
-# dict = calculateTotalDict("../dataset/processed/enron1/enron1/spam/")
-# print dict
-# result = extractTopWords(dict,100)
-# print result
+def extractTopWordsWithNumber(dict, number):
+    dictSorted = sorted(dict.items(), key = operator.itemgetter(1), reverse = True)
+    top = []
+    for i in range(0, number):
+        top.append(dictSorted[i][0])
+    return top
 
-
+dict = calculateTotalDict("../dataset/processed/enron1/enron1/spam/")
+print dict
+result = extractTopWords(dict)
+print result
 # path1 = "../dataset/processed/enron1/enron1/spam/0008.2003-12-18.GP.spam.txt"
 # path2 = "../dataset/processed/enron1/enron1/spam/0017.2003-12-18.GP.spam.txt"
 # d1 = DicCreator(path1)
