@@ -16,8 +16,6 @@ stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so',
 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now', 'subject']
 
-wholeDict = {}
-
 
 def DicCreator(filepath):
     dict = {}
@@ -27,6 +25,8 @@ def DicCreator(filepath):
     for line in f:
         # eliminate the punctuation
         line = line.translate(None, string.punctuation)
+        # eliminate the number
+        line = line.translate(None, string.digits)
         for word in line.strip().lower().split():
             if word not in stopwords:
                 if dict.has_key(word):
@@ -48,6 +48,7 @@ def dictMerge(dict1, dict2):
 
 
 def calculateTotalDict(folderpath):
+    wholeDict = {}
     for file in os.listdir(folderpath):
         Path = folderpath + file
         dict = DicCreator(Path)
@@ -62,14 +63,19 @@ def extractTopWords(dict, number):
         top.append(dictSorted[i][0])
     return top
 
+# dict = calculateTotalDict("../dataset/processed/enron1/enron1/spam/")
+# print dict
+# result = extractTopWords(dict,100)
+# print result
 
-path1 = "../dataset/processed/enron1/enron1/spam/0008.2003-12-18.GP.spam.txt"
-path2 = "../dataset/processed/enron1/enron1/spam/0017.2003-12-18.GP.spam.txt"
-d1 = DicCreator(path1)
-d2 = DicCreator(path2)
-print d1
-print d2
-dict = dictMerge(d1, d2)
-print dict
-result = extractTopWords(dict, 3)
-print result
+
+# path1 = "../dataset/processed/enron1/enron1/spam/0008.2003-12-18.GP.spam.txt"
+# path2 = "../dataset/processed/enron1/enron1/spam/0017.2003-12-18.GP.spam.txt"
+# d1 = DicCreator(path1)
+# d2 = DicCreator(path2)
+# print d1
+# print d2
+# dict = dictMerge(d1, d2)
+# print dict
+# result = extractTopWords(dict, 3)
+# print result
