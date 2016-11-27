@@ -1,6 +1,7 @@
 import operator
 import string
 import os
+import numpy
 
 
 stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
@@ -88,8 +89,8 @@ def resultVector(ffp1,ffp2):
     result = combineTopWordVector(topDict1, topDict2)
     return result
 
-ffp1 = "../dataset/processed/enron1/enron1/spam/"
-ffp2 = "../dataset/processed/enron1/enron1/ham/"
+ffp1 = "../dataset/processed/enron1/spam/"
+ffp2 = "../dataset/processed/enron1/ham/"
 result = resultVector(ffp1,ffp2)
 print result
 
