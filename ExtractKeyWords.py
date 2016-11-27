@@ -84,10 +84,10 @@ def combineTopWordVector(topDict1, topDict2):
 
 def resultVector(ffp1,ffp2):
     dict1 = calculateTotalDict(ffp1)
-    topDict1 = extractTopWords(dict1)
+    topDict1 = extractTopWordsWithNumber(dict1,100)
     print topDict1
     dict2 = calculateTotalDict(ffp2)
-    topDict2 = extractTopWords(dict2)
+    topDict2 = extractTopWordsWithNumber(dict2,100)
     result = combineTopWordVector(topDict1, topDict2)
     return result
 
