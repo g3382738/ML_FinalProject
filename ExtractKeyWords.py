@@ -95,14 +95,20 @@ def resultVector(ffp1,ffp2):
 
 def transfer(fileDj, vocabulary):
     file = open(fileDj)
-    text = file.read().lower()
     BOWDj = np.zeros(len(vocabulary)+1)
-    for word in text:
-        if word in vocabulary:
-            index = vocabulary.index(word)
-            BOWDj[index] += 1
-        else:
-            BOWDj[173] += 1
+
+    for line in file:
+        # eliminate the punctuation
+        line = line.translate(None, string.punctuation)
+        # eliminate the number
+        line = line.translate(None, string.digits)
+        for word in line.strip().lower().split():
+            if word in vocabulary:
+                index = vocabulary.index(word)
+                BOWDj[index] += 1
+            else:
+                BOWDj[len(vocabulary)] += 1
+
     file.close()
     return BOWDj
 
@@ -159,6 +165,24 @@ def naiveBayesMulFeature_train(Xtrain, ytrain):
     print "totalCount is :", Xtrain[ytrain == 1].sum()
     return thetaPos, thetaNeg
 
+def naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg):
+    yPredict = np.zeros(len(ytest))
+    correctPre = 0
+    posTest = np.dot(Xtest, np.log(thetaPos))
+    negTest = np.dot(Xtest, np.log(thetaNeg))
+    for i in range(len(Xtest)):
+        if posTest[i] > negTest[i]:
+            yPredict[i] = 1
+        else:
+            yPredict[i] = 0
+
+        if yPredict[i] == ytest[i]:
+            correctPre += 1
+
+	Accuracy = correctPre / float(len(ytest))
+
+    return yPredict, Accuracy
+
 if __name__ == "__main__":
 
     ffp1 = "../dataset/processed/enron1/spam/"
@@ -166,14 +190,17 @@ if __name__ == "__main__":
     path = "../dataset/processed/"
     vocabulary = resultVector(ffp1,ffp2)
     print len(vocabulary)
+    print vocabulary
     Xtrain, Xtest, ytrain, ytest = loadData(path)
     # print len(Xtrain)
     # print len(Xtest)
     # print len(ytrain)
     # print len(ytest)
     thetaPos, thetaNeg = naiveBayesMulFeature_train(Xtrain, ytrain)
+    yPredict, Accuracy = naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg)
     print "thetaPos is: ", thetaPos
     print "thetaNeg is: ", thetaNeg
+    print "accuracy is: ", Accuracy
 
     # result = extractTopWords(dict)
     # print result
