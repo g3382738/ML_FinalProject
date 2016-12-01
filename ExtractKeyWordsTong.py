@@ -2,11 +2,7 @@ import operator
 import string
 import os
 import numpy as np
-
-from sklearn import linear_model
-
 from sklearn.ensemble import RandomForestClassifier
-
 
 stop = ['2']
 
@@ -121,13 +117,10 @@ def transfer(fileDj, vocabulary):
 
 def loadData(Path):
 
-
-
     trainDir = Path + "/enron5"
     trainPosDir = trainDir + "/spam"
     trainNegDir = trainDir + "/ham"
     testDir = Path + "/enron6"
-
     testPosDir = testDir + "/spam"
     testNegDir = testDir + "/ham"
     Xtrain = []
@@ -144,6 +137,7 @@ def loadData(Path):
         path = trainNegDir + "/" + file
         Xtrain.append(transfer(path, vocabulary))
         ytrain.append(0)
+
 
     for file in os.listdir(testPosDir):
         path = testPosDir + "/" + file
@@ -170,10 +164,19 @@ def naiveBayesMulFeature_train(Xtrain, ytrain):
     thetaPos = (posCount + alpha) / (Xtrain[ytrain == 1].sum() + alpha * len(vocabulary))
     negCount = np.sum(Xtrain[ytrain == 0], axis = 0)
     thetaNeg = (negCount + alpha) / (Xtrain[ytrain == 0].sum() + alpha * len(vocabulary))
-    # print Xtrain[0:30]
-    # print "posCount is :", posCount
-    # print "totalCount is :", Xtrain[ytrain == 1].sum()
+    print Xtrain[0:30]
+    print "posCount is :", posCount
+    print "totalCount is :", Xtrain[ytrain == 1].sum()
     return thetaPos, thetaNeg
+
+
+def RandomForest(Xtrain, ytrain, Xtest, ytest):
+    test_score = 0.0
+    clf = RandomForestClassifier()
+    clf.fit(Xtrain, ytrain)
+    result = clf.predict(Xtest)
+    test_score += len([1 for i in range(len(Xtest)) if result[i] == ytest[i]])
+    return test_score / len(Xtest)
 
 
 def naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg):
@@ -194,56 +197,27 @@ def naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg):
 
     return yPredict, Accuracy
 
-
-def RandomForest(Xtrain, ytrain, Xtest, ytest):
-    test_score = 0.0
-    clf = RandomForestClassifier()
-    clf.fit(Xtrain, ytrain)
-    result = clf.predict(Xtest)
-    test_score += len([1 for i in range(len(Xtest)) if result[i] == ytest[i]])
-    return test_score / len(Xtest)
-
-
-def logisticRegression(Xtrain, ytrain, Xtest, ytest):
-    logreg = linear_model.LogisticRegression(C=1e5)
-    logreg.fit(Xtrain, ytrain)
-    yPredict = logreg.predict(Xtest)
-    accuracySum = 0.0
-    for i in range(len(yPredict)):
-        if yPredict[i] == ytest[i]:
-            accuracySum += 1
-    accuracy = accuracySum / len(yPredict)
-
-    return accuracy
-
 if __name__ == "__main__":
 
     ffp1 = "../dataset/processed/enron5/spam/"
     ffp2 = "../dataset/processed/enron5/ham/"
-
-
     path = "../dataset/processed/"
     vocabulary = resultVector(ffp1,ffp2)
-    # print len(vocabulary)
-    # print vocabulary
+    print len(vocabulary)
+    print vocabulary
     Xtrain, Xtest, ytrain, ytest = loadData(path)
     # print len(Xtrain)
     # print len(Xtest)
     # print len(ytrain)
     # print len(ytest)
     thetaPos, thetaNeg = naiveBayesMulFeature_train(Xtrain, ytrain)
-    yPredict, ACC_NBC = naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg)
-    # print "thetaPos is: ", thetaPos
-    # print "thetaNeg is: ", thetaNeg
-    print "Accuracy of Naive Bayes Classifier: ", ACC_NBC
-
-
-    ACC_LR = logisticRegression(Xtrain, ytrain, Xtest, ytest)
-    print "Accuracy of Logistic regression: ", ACC_LR
+    yPredict, Accuracy = naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg)
+    print "thetaPos is: ", thetaPos
+    print "thetaNeg is: ", thetaNeg
+    print "accuracy is: ", Accuracy
 
     ACC_RF = RandomForest(Xtrain, ytrain, Xtest, ytest)
     print "Accuracy of RandomForest: ", ACC_RF
-
 
     # result = extractTopWords(dict)
     # print result
