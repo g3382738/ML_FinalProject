@@ -4,6 +4,7 @@ import os
 import numpy as np
 
 from sklearn import linear_model
+from sklearn import neighbors
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -123,10 +124,10 @@ def loadData(Path):
 
 
 
-    trainDir = Path + "/enron5"
+    trainDir = Path + "/enron1"
     trainPosDir = trainDir + "/spam"
     trainNegDir = trainDir + "/ham"
-    testDir = Path + "/enron6"
+    testDir = Path + "/enron2"
 
     testPosDir = testDir + "/spam"
     testNegDir = testDir + "/ham"
@@ -216,10 +217,23 @@ def logisticRegression(Xtrain, ytrain, Xtest, ytest):
 
     return accuracy
 
+
+def kNNregression(Xtrain, ytrain, Xtest, ytest):
+    kNN = neighbors.KNeighborsClassifier(15, weights='distance')
+    kNN.fit(Xtrain, ytrain)
+    yPredict = kNN.predict(Xtest)
+    accuracySum = 0.0
+    for i in range(len(yPredict)):
+        if yPredict[i] == ytest[i]:
+            accuracySum += 1
+    accuracy = accuracySum / len(yPredict)
+    return accuracy
+
+
 if __name__ == "__main__":
 
-    ffp1 = "../dataset/processed/enron5/spam/"
-    ffp2 = "../dataset/processed/enron5/ham/"
+    ffp1 = "../dataset/processed/enron1/spam/"
+    ffp2 = "../dataset/processed/enron1/ham/"
 
 
     path = "../dataset/processed/"
@@ -243,6 +257,9 @@ if __name__ == "__main__":
 
     ACC_RF = RandomForest(Xtrain, ytrain, Xtest, ytest)
     print "Accuracy of RandomForest: ", ACC_RF
+
+    ACC_KNN = kNNregression(Xtrain, ytrain, Xtest, ytest)
+    print "Accuracy of kNN: ", ACC_KNN
 
 
     # result = extractTopWords(dict)
