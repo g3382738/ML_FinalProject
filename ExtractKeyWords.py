@@ -2,6 +2,7 @@ import operator
 import string
 import os
 import numpy as np
+from sklearn import linear_model
 
 stop = ['2']
 
@@ -114,10 +115,10 @@ def transfer(fileDj, vocabulary):
 
 def loadData(Path):
 
-    trainDir = Path + "/enron1"
+    trainDir = Path + "/enron2"
     trainPosDir = trainDir + "/spam"
     trainNegDir = trainDir + "/ham"
-    testDir = Path + "/enron2"
+    testDir = Path + "/enron3"
     testPosDir = testDir + "/spam"
     testNegDir = testDir + "/ham"
     Xtrain = []
@@ -160,9 +161,9 @@ def naiveBayesMulFeature_train(Xtrain, ytrain):
     thetaPos = (posCount + alpha) / (Xtrain[ytrain == 1].sum() + alpha * len(vocabulary))
     negCount = np.sum(Xtrain[ytrain == 0], axis = 0)
     thetaNeg = (negCount + alpha) / (Xtrain[ytrain == 0].sum() + alpha * len(vocabulary))
-    print Xtrain[0:30]
-    print "posCount is :", posCount
-    print "totalCount is :", Xtrain[ytrain == 1].sum()
+    # print Xtrain[0:30]
+    # print "posCount is :", posCount
+    # print "totalCount is :", Xtrain[ytrain == 1].sum()
     return thetaPos, thetaNeg
 
 def naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg):
@@ -183,14 +184,28 @@ def naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg):
 
     return yPredict, Accuracy
 
+
+def logisticRegression(Xtrain, ytrain, Xtest, ytest):
+    logreg = linear_model.LogisticRegression(C=1e5)
+    logreg.fit(Xtrain, ytrain)
+    yPredict = logreg.predict(Xtest)
+    accuracySum = 0.0
+    for i in range(len(yPredict)):
+        if yPredict[i] == ytest[i]:
+            accuracySum += 1
+    accuracy = accuracySum / len(yPredict)
+    print len(yPredict)
+    print len(ytest)
+    print accuracy
+
 if __name__ == "__main__":
 
-    ffp1 = "../dataset/processed/enron1/spam/"
-    ffp2 = "../dataset/processed/enron1/ham/"
+    ffp1 = "../dataset/processed/enron2/spam/"
+    ffp2 = "../dataset/processed/enron2/ham/"
     path = "../dataset/processed/"
     vocabulary = resultVector(ffp1,ffp2)
-    print len(vocabulary)
-    print vocabulary
+    # print len(vocabulary)
+    # print vocabulary
     Xtrain, Xtest, ytrain, ytest = loadData(path)
     # print len(Xtrain)
     # print len(Xtest)
@@ -198,9 +213,11 @@ if __name__ == "__main__":
     # print len(ytest)
     thetaPos, thetaNeg = naiveBayesMulFeature_train(Xtrain, ytrain)
     yPredict, Accuracy = naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg)
-    print "thetaPos is: ", thetaPos
-    print "thetaNeg is: ", thetaNeg
+    # print "thetaPos is: ", thetaPos
+    # print "thetaNeg is: ", thetaNeg
     print "accuracy is: ", Accuracy
+
+    logisticRegression(Xtrain, ytrain, Xtest, ytest)
 
     # result = extractTopWords(dict)
     # print result
