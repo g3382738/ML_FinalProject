@@ -4,10 +4,14 @@ import os
 import numpy as np
 
 from sklearn import linear_model
+<<<<<<< HEAD
 from sklearn import neighbors
 
+=======
+from sklearn.svm import SVC
+>>>>>>> 10289534e01f34ecfa4e85e4331431f5a432d6ad
 from sklearn.ensemble import RandomForestClassifier
-
+from sklearn.naive_bayes import GaussianNB
 
 stop = ['2']
 
@@ -121,6 +125,7 @@ def transfer(fileDj, vocabulary):
 
 
 def loadData(Path):
+<<<<<<< HEAD
 
 
 
@@ -129,6 +134,12 @@ def loadData(Path):
     trainNegDir = trainDir + "/ham"
     testDir = Path + "/enron2"
 
+=======
+    trainDir = Path + "/enron5"
+    trainPosDir = trainDir + "/spam"
+    trainNegDir = trainDir + "/ham"
+    testDir = Path + "/enron6"
+>>>>>>> 10289534e01f34ecfa4e85e4331431f5a432d6ad
     testPosDir = testDir + "/spam"
     testNegDir = testDir + "/ham"
     Xtrain = []
@@ -165,7 +176,6 @@ def loadData(Path):
 
 
 def naiveBayesMulFeature_train(Xtrain, ytrain):
-
     alpha = 1
     posCount = np.sum(Xtrain[ytrain == 1], axis = 0)
     thetaPos = (posCount + alpha) / (Xtrain[ytrain == 1].sum() + alpha * len(vocabulary))
@@ -192,17 +202,27 @@ def naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg):
             correctPre += 1
 
 	Accuracy = correctPre / float(len(ytest))
-
     return yPredict, Accuracy
 
 
-def RandomForest(Xtrain, ytrain, Xtest, ytest):
+def SVM(Xtrain, ytrain, Xtest, ytest):
     test_score = 0.0
-    clf = RandomForestClassifier()
+    clf = SVC(C = 3.7)
     clf.fit(Xtrain, ytrain)
     result = clf.predict(Xtest)
     test_score += len([1 for i in range(len(Xtest)) if result[i] == ytest[i]])
-    return test_score / len(Xtest)
+    accuracy = test_score / len(Xtest)
+    return accuracy
+
+
+def NaiveBayes(Xtrain, ytrain, Xtest, ytest):
+    test_score = 0.0
+    clf = GaussianNB()
+    clf.fit(Xtrain, ytrain)
+    result = clf.predict(Xtest)
+    test_score += len([1 for i in range(len(Xtest)) if result[i] == ytest[i]])
+    accuracy = test_score / len(Xtest)
+    return accuracy
 
 
 def logisticRegression(Xtrain, ytrain, Xtest, ytest):
@@ -214,10 +234,20 @@ def logisticRegression(Xtrain, ytrain, Xtest, ytest):
         if yPredict[i] == ytest[i]:
             accuracySum += 1
     accuracy = accuracySum / len(yPredict)
-
     return accuracy
 
 
+def RandomForest(Xtrain, ytrain, Xtest, ytest):
+    test_score = 0.0
+    clf = RandomForestClassifier()
+    clf.fit(Xtrain, ytrain)
+    result = clf.predict(Xtest)
+    test_score += len([1 for i in range(len(Xtest)) if result[i] == ytest[i]])
+    accuracy = test_score / len(Xtest)
+    return accuracy
+
+
+<<<<<<< HEAD
 def kNNregression(Xtrain, ytrain, Xtest, ytest):
     kNN = neighbors.KNeighborsClassifier(15, weights='distance')
     kNN.fit(Xtrain, ytrain)
@@ -230,6 +260,8 @@ def kNNregression(Xtrain, ytrain, Xtest, ytest):
     return accuracy
 
 
+=======
+>>>>>>> 10289534e01f34ecfa4e85e4331431f5a432d6ad
 if __name__ == "__main__":
 
     ffp1 = "../dataset/processed/enron1/spam/"
@@ -251,6 +283,8 @@ if __name__ == "__main__":
     # print "thetaNeg is: ", thetaNeg
     print "Accuracy of Naive Bayes Classifier: ", ACC_NBC
 
+    ACC_SVM = SVM(Xtrain, ytrain, Xtest, ytest)
+    print "Accuracy of SVM: ", ACC_SVM
 
     ACC_LR = logisticRegression(Xtrain, ytrain, Xtest, ytest)
     print "Accuracy of Logistic regression: ", ACC_LR
@@ -258,6 +292,7 @@ if __name__ == "__main__":
     ACC_RF = RandomForest(Xtrain, ytrain, Xtest, ytest)
     print "Accuracy of RandomForest: ", ACC_RF
 
+<<<<<<< HEAD
     ACC_KNN = kNNregression(Xtrain, ytrain, Xtest, ytest)
     print "Accuracy of kNN: ", ACC_KNN
 
@@ -274,3 +309,5 @@ if __name__ == "__main__":
     # print dict
     # result = extractTopWords(dict, 3)
     # print result
+=======
+>>>>>>> 10289534e01f34ecfa4e85e4331431f5a432d6ad
