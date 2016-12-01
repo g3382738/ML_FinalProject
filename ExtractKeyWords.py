@@ -2,6 +2,7 @@ import operator
 import string
 import os
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 
 stop = ['2']
 
@@ -93,6 +94,7 @@ def resultVector(ffp1,ffp2):
     result = combineTopWordVector(topDict1, topDict2)
     return result
 
+
 def transfer(fileDj, vocabulary):
     file = open(fileDj)
     BOWDj = np.zeros(len(vocabulary)+1)
@@ -112,12 +114,13 @@ def transfer(fileDj, vocabulary):
     file.close()
     return BOWDj
 
+
 def loadData(Path):
 
-    trainDir = Path + "/enron1"
+    trainDir = Path + "/enron5"
     trainPosDir = trainDir + "/spam"
     trainNegDir = trainDir + "/ham"
-    testDir = Path + "/enron2"
+    testDir = Path + "/enron6"
     testPosDir = testDir + "/spam"
     testNegDir = testDir + "/ham"
     Xtrain = []
@@ -134,7 +137,6 @@ def loadData(Path):
         path = trainNegDir + "/" + file
         Xtrain.append(transfer(path, vocabulary))
         ytrain.append(0)
-
 
     for file in os.listdir(testPosDir):
         path = testPosDir + "/" + file
@@ -153,6 +155,7 @@ def loadData(Path):
 
     return Xtrain, Xtest, ytrain, ytest
 
+
 def naiveBayesMulFeature_train(Xtrain, ytrain):
 
     alpha = 1
@@ -164,6 +167,16 @@ def naiveBayesMulFeature_train(Xtrain, ytrain):
     print "posCount is :", posCount
     print "totalCount is :", Xtrain[ytrain == 1].sum()
     return thetaPos, thetaNeg
+
+
+def RandomForest(Xtrain, ytrain, Xtest, ytest):
+    test_score = 0.0
+    clf = RandomForestClassifier()
+    clf.fit(Xtrain, ytrain)
+    result = clf.predict(Xtest)
+    test_score += len([1 for i in range(len(Xtest)) if result[i] == ytest[i]])
+    return test_score / len(Xtest)
+
 
 def naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg):
     yPredict = np.zeros(len(ytest))
@@ -185,8 +198,8 @@ def naiveBayesMulFeature_test(Xtest, ytest,thetaPos, thetaNeg):
 
 if __name__ == "__main__":
 
-    ffp1 = "../dataset/processed/enron1/spam/"
-    ffp2 = "../dataset/processed/enron1/ham/"
+    ffp1 = "../dataset/processed/enron5/spam/"
+    ffp2 = "../dataset/processed/enron5/ham/"
     path = "../dataset/processed/"
     vocabulary = resultVector(ffp1,ffp2)
     print len(vocabulary)
@@ -201,6 +214,9 @@ if __name__ == "__main__":
     print "thetaPos is: ", thetaPos
     print "thetaNeg is: ", thetaNeg
     print "accuracy is: ", Accuracy
+
+    ACC_RF = RandomForest(Xtrain, ytrain, Xtest, ytest)
+    print "Accuracy of RandomForest: ", ACC_RF
 
     # result = extractTopWords(dict)
     # print result
